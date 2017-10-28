@@ -13,9 +13,9 @@ export default {
         pages: ['pages/index/index'], // Will be filled in webpack
         window: {
             backgroundTextStyle: 'light',
-            navigationBarBackgroundColor: '#326bb0',
-            navigationBarTitleText: '头脑特攻队',
-            navigationBarTextStyle: '#fff'
+            navigationBarBackgroundColor: '#fff',
+            navigationBarTitleText: '嘎嘎记单词',
+            navigationBarTextStyle: 'black'
         }
     }
 };

@@ -1,103 +1,43 @@
 <template>
     <div class="container">
-        <div v-if="userInfo.avatarUrl" class="header-frame">
-            <div class="header-img">
+        <div class="header">
+            <div v-if="userInfo.avatarUrl" class="header-img">
                 <img :src="userInfo.avatarUrl" alt="" mode="widthFix">
             </div>
-            <div class="header-msg">
-                <div class="line-item">
-                    <div class="label">{{userInfo.nickName}}</div>
-                    <div class="money">
-                        <div class="gold">
-                            <img
-                                src="http://p0.meituan.net/codeman/4a832502b68d73d3714239ee87ae74457091.png"
-                                alt=""
-                                mode="widthFix"
-                            >
-                        </div>
-                        <div class="num">2333</div>
-                        <div class="plus iconfont icon-iconjiahao"></div>
-                    </div>
-                </div>
-                <div class="line-item">
-                    <div class="label">LV.10</div>
-                    <div class="score">
-                        <div class="score-content"></div>
-                    </div>
-                </div>
-            </div>
-            <div class="qrcode"></div>
+            <div v-if="userInfo.nickName" class="welcome t-l-vh_c">Hi,{{userInfo.nickName}}</div>
+            <div v-if="userInfo.nickName" class="desc t-l-h_c">不积跬步无以至千里,一定要坚持哟</div>
         </div>
-        <div class="icon-list">
-            <div class="icon-item">
-                <div class="icon-img">
-                    <img
-                        src="http://p1.meituan.net/codeman/206e91d7a4c6ec42ad611cd96c4782ce9906.png"
-                        alt=""
-                        mode="widthFix"
-                    >
-                </div>
-                <div class="name">排位赛</div>
+        <div class="pk t-l-vh_c">
+            <div class="friend-pk">
+                <img src="http://p0.meituan.net/codeman/244aea13af93a91cb61f3ff7c31b9dfd58978.jpg" alt="" mode="widthFix">
+                <div class="desc">好友对战</div>
             </div>
-            <div class="icon-item">
-                <div class="icon-img">
-                    <img
-                        src="http://p1.meituan.net/codeman/28de17f9d6cb97f35b61a3204cf959e94645.png"
-                        alt=""
-                        mode="widthFix"
-                    >
-                </div>
-                <div class="name">好友排行</div>
+            <div class="random-pk">
+                <img src="http://p1.meituan.net/codeman/4fc75dcfc17037627a16539d1cb9214e84636.jpg" alt="" mode="widthFix">
+                <div class="desc">随机对战</div>
             </div>
-            <div class="icon-item">
-                <div class="icon-img">
-                    <img
-                        src="http://p0.meituan.net/codeman/ca5afc3d0062c8a886cd5e4b990178354377.png"
-                        alt=""
-                        mode="widthFix"
-                    >
+        </div>
+        <div class="learn">
+            <div class="word-cards">
+                <div class="word-card t-l-vh_c">
+                    <div class="word-num">{{record.newSize}}</div>
+                    <div class="desc">新词数</div>
                 </div>
-                <div class="name">好友对战</div>
+                <div class="word-card t-l-vh_c">
+                    <div class="word-num">{{record.totalSize}}</div>
+                    <div class="desc">今日单词</div>
+                </div>
+                <div class="word-card t-l-vh_c">
+                    <div class="word-num">{{record.totalSize}}</div>
+                    <div class="desc">剩余单词</div>
+                </div><!--
+                <div class="word-card t-l-vh_c">
+                    <div class="word-num">0</div>
+                    <div class="desc">我的单词</div>
+                </div>-->
             </div>
-            <div class="icon-item">
-                <div class="icon-img">
-                    <img
-                        src="http://p1.meituan.net/codeman/74249adf5f2db3dc92aa46984bc48b1e4545.png"
-                        alt=""
-                        mode="widthFix"
-                    >
-                </div>
-                <div class="name">一站到底</div>
-            </div>
-            <div class="icon-item">
-                <div class="icon-img">
-                    <img
-                        src="http://p1.meituan.net/codeman/8234485dd1d9c2dd3eb9cfc2585c38bb5352.png"
-                        alt=""
-                        mode="widthFix"
-                    >
-                </div>
-                <div class="name">商店</div>
-            </div>
-            <div class="icon-item">
-                <div class="icon-img">
-                    <img
-                        src="http://p0.meituan.net/codeman/91bd1887a3ba18c3f0a71ccdc7a7fde24853.png"
-                        alt=""
-                        mode="widthFix"
-                    >
-                </div>
-                <div class="name">银行</div>
-            </div>
-            <div class="icon-item">
-                <div class="icon-img">
-                    <img
-                        src="http://p1.meituan.net/codeman/61c6176aa87273d7bf2b245a65d8c5877929.png"
-                        alt=""
-                        mode="widthFix"
-                    >
-                </div>
-                <div class="name">我的物品</div>
+            <div class="begin-btn-frame t-l-vh_c">
+                <div class="begin-btn">开始学习</div>
             </div>
         </div>
     </div>
@@ -109,7 +49,8 @@ import superbridge from '../../lib/common/superbridge';
 export default {
     data () {
         return {
-            userInfo: {}
+            userInfo: {},
+            record: {}
         };
     },
     created () {
@@ -132,11 +73,21 @@ export default {
     methods: {
         init () {
             this.initHeader();
+            this.initRecord();
         },
         initHeader () {
             superbridge.getUserInfo().then((res) => {
                 console.log(res);
                 this.userInfo = res.userInfo;
+            });
+        },
+        initRecord () {
+            superbridge.fetch('/brain/loadRecordNum', {
+                method: 'POST'
+            }).then((res) => {
+                if (res.code === 0) {
+                    this.record = res.data;
+                }
             });
         }
     }
@@ -145,123 +96,108 @@ export default {
 
 <style>
     page{
-        background:#FFF;
-        background:
-            linear-gradient(45deg, #344984 25%, #2e437b 0,#2e437b 50%,#344984 0%,#344984 75%,#2e437b 0);
-        background-size:10px 10px;
+        background:url(http://p1.meituan.net/codeman/bfd4d94c7fed81a71fd4ad5051ab8bcc70771.jpg);
+        background-size: 375px 667px;
+        height: 100%;
     }
 </style>
 <style lang="less" scoped>
     @import "../../lib/style/fonts/iconfont.css";
+    @import "../../lib/style/layout";
     .container{
-        padding: 0 15px;
-        .header-frame{
-            height: 56px;
-            padding: 6px 0;
-            background: #2a4b8b;
-            border-radius: 5px;
-            border: 1px solid #2a4b8b;
+        .header{
+            min-height: 140px;
+            background: rgba(255,255,255,0.8);
             display: flex;
-            justify-content: center;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 10px;
             .header-img{
                 width:50px;
                 height:50px;
                 border-radius: 50%;
-                border: 3px solid #fff;
                 overflow: hidden;
+                border: 4px solid #efefef;
                 Image{
                     width:100%;
                 }
             }
-            .header-msg{
-                width:190px;
-                padding: 0 0 0 15px;
-                .line-item{
-                    height:25px;
-                    margin:3px 0;
-                    display: flex;
-                    align-items: center;
-                    position: relative;
-                    .label{
-                        color: #fff;
-                        font-size: 14px;
-                    }
-                    .money, .score{
-                        width:120px;
-                        position: absolute;
-                        right: 0;
-                        height: 100%;
-                    }
-                    .money{
-                        height:15px;
-                        border-radius:5px;
-                        background: #26366d;
-                        display: flex;
-                        justify-content: center;
-                        .gold {
-                            left: 0;
-                            position: absolute;
-                            margin-top: -2px;
-                            width:20px;
-                            height: 20px;
-                            Image{
-                                width:100%;
-                            }
-                        }
-                        .num{
-                            color: #fff;
-                            font-size: 13px;
-                        }
-                        .plus{
-                            position: absolute;
-                            right:0;
-                            color:#fff;
-                            font-size: 10px;
-                            margin-top: 2px;
-                            margin-right: 2.5px;
-                        }
-                    }
-                    .score{
-                        width:130px;
-                        height:12.5px;
-                        border-radius: 8px;
-                        background: #26366d;
-                        .score-content{
-                            width:10px;
-                            height: 12px;
-                            border-radius: 8px;
-                            background: #fff;
-                        }
-                    }
-                }
+            .welcome{
+                height: 60px;
+                font-size: 30px;
+                font-weight: bolder;
+                color: #40ba9e;
+                font-family:"SimHei";
             }
-            .qrcode{
-                width:50px;
+            .desc{
+                font-size: 15px;
+                color: #999;
             }
         }
-        .icon-list{
-            display: flex;
-            flex-wrap: wrap;
-            .icon-item{
-                width:33%;
-                height: 120px;
+        .pk{
+            margin-top: 10px;
+            padding: 12px 10px;
+            background: rgba(255,255,255,0.8);
+            height:170px;
+            .friend-pk{
+                width:200px;
+                height:150px;
+                margin-right: 15px;
+            }
+            .random-pk{
+                width:100px;
+                height:150px;
+                margin-left: 15px;
+            }
+            .friend-pk,.random-pk{
+                position: relative;
+                border-radius: 5px;
+                overflow: hidden;
+                Image{
+                    width:100%;
+                }
+                .desc{
+                    position: absolute;
+                    color: #fff;
+                    top:0;
+                    margin:10px 0 0 10px;
+                    font-family: "SimHei";
+                }
+            }
+        }
+        .learn{
+            margin-top: 10px;
+            background: rgba(255,255,255,0.8);
+            .word-cards{
+                padding: 0 10px;
+                height:100px;
                 display: flex;
-                flex-direction: column;
-                justify-content: center;
-                align-items: center;
-                .icon-img{
-                    width:70px;
-                    height:70px;
-                    overflow: hidden;
-                    Image{
-                        width:100%;
+                .word-card{
+                    width:33.33%;
+                    flex-direction: column;
+                    .word-num{
+                        font-size: 30px;
+                        font-weight: bolder;
+                        color: #333;
+                        font-family:"STHupo";
+                    }
+                    .desc{
+                        color: #999;
+                        font-size: 14px;
                     }
                 }
-                .name{
+            }
+            .begin-btn-frame{
+                width:100%;
+                height:100px;
+                .begin-btn{
+                    width: 200px;
+                    height:50px;
+                    background: #40ba9e;
                     color: #fff;
-                    font-size: 12px;
-                    height: 30px;
-                    line-height: 30px;
+                    text-align: center;
+                    line-height: 50px;
+                    border-radius: 25px;
                 }
             }
         }
