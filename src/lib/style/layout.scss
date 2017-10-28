@@ -1,0 +1,82 @@
+/**
+  * layout
+  *
+  * 说明
+  * l:layout
+  * r:row
+  * l:left
+  * r:right
+  * c:center
+  *
+  * l-: layout
+  * -v: vertical
+  * -h: horizontal
+  * _l: left
+  * _r: right
+  * _c: center
+  */
+
+// row: 行
+// column: 列
+// horizontal: 水平
+// vertical: 垂直
+// average: 平均
+
+// 垂直: layout-vertical
+.t-l-v {
+  display: flex;
+  flex-direction: column;
+}
+
+// 水平：layout-horizontal
+.t-l-h {
+  display: flex;
+  &_r {
+    flex-direction: row-reverse;
+  }
+}
+
+// 1行内元素平分
+.t-l-h_a {
+  display: flex;
+  & > * {
+    flex: 1;
+    text-align: center;
+  }
+}
+
+// 主轴为水平方向，起点在右端
+.t-l-h_r {
+  display: flex;
+  flex-direction: row-reverse;
+}
+
+// 1行2列两边对齐
+.t-l-h_lr {
+  display: flex;
+  justify-content: space-between;
+}
+
+// 占用剩下的
+.t-l_auto {
+  flex: 1;
+}
+
+// 垂直居中对齐
+.t-l-v_c {
+  display: flex;
+  align-items: center;
+}
+
+// 水平居中对齐
+.t-l-h_c {
+  display: flex;
+  justify-content: center;
+}
+
+// 垂直水平居中对齐
+.t-l-vh_c {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
