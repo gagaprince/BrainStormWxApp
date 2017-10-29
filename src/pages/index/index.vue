@@ -37,7 +37,7 @@
                 </div>-->
             </div>
             <div class="begin-btn-frame t-l-vh_c">
-                <div class="begin-btn">开始学习</div>
+                <div @click="beginLearn" class="begin-btn">开始学习</div>
             </div>
         </div>
     </div>
@@ -88,6 +88,12 @@ export default {
                 if (res.code === 0) {
                     this.record = res.data;
                 }
+            });
+        },
+        beginLearn () {
+            let url = '/pages/learn/learn';
+            superbridge.openWebview({
+                url
             });
         }
     }
