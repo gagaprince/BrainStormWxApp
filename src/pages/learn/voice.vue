@@ -1,6 +1,6 @@
 <template>
     <div class="container">
-        <div class="voice-btn t-l-vh_c" @click="playAmVoice">
+        <div :class="btnClass" @click="playAmVoice">
             <div class="iconfont icon-xiaolaba laba"></div>
             <template v-if="voiceSrc">
                 <audio :src="voiceSrc" :id="id"></audio>
@@ -11,6 +11,10 @@
 <script>
     export default {
         props: {
+            size: {
+                type: String,
+                required: false
+            },
             id: {
                 type: String,
                 required: true
@@ -24,11 +28,17 @@
             return {};
         },
         components: {},
-        computed: {},
+        computed: {
+            btnClass () {
+                return `voice-btn t-l-vh_c ${this.size || ''} ${this.voiceSrc ? '' : 'disable'}`;
+            }
+        },
         methods: {
             playAmVoice () {
-                let audioCtx = wx.createAudioContext(this.id);
-                audioCtx.play();
+                if (this.voiceSrc) {
+                    let audioCtx = wx.createAudioContext(this.id);
+                    audioCtx.play();
+                }
             }
         },
         created () {
@@ -49,6 +59,17 @@
                 color:#fff;
                 font-size: 16px;
                 font-weight: bolder;
+            }
+        }
+        .disable{
+            background: #efefef;
+        }
+        .small{
+            width:20px;
+            height: 20px;
+            .laba{
+                color:#fff;
+                font-size: 10px;
             }
         }
     }

@@ -1,40 +1,55 @@
 <template>
     <div class="container">
-        <div class="word-frame">
-            <div class="word-card">{{currentWord.word}}</div>
-            <word-voice-card
-                id="amAudio"
-                :voiceSrc="voiceObj.ph_am_mp3"
-                :wordVoice="am"
-            ></word-voice-card>
-            <word-voice-card
-                id="enAudio"
-                :voiceSrc="voiceObj.ph_en_mp3"
-                :wordVoice="en"
-            ></word-voice-card>
-            <div class="bt-line"></div>
-        </div>
-        <div v-if="currentWord.brainMeanModels" class="trans-frame">
-            <div class="chinese">
-                <div class="label-frame">
-                    <div class="label">中文</div>
+        <scroll-view
+            scorll-y
+        >
+            <div class="word-frame">
+                <div class="word-card">{{currentWord.word}}</div>
+                <word-voice-card
+                    id="amAudio"
+                    :voiceSrc="voiceObj.ph_am_mp3"
+                    :wordVoice="am"
+                ></word-voice-card>
+                <word-voice-card
+                    id="enAudio"
+                    :voiceSrc="voiceObj.ph_en_mp3"
+                    :wordVoice="en"
+                ></word-voice-card>
+                <div class="bt-line"></div>
+            </div>
+            <div v-if="currentWord.brainMeanModels" class="trans-frame">
+                <div class="chinese">
+                    <div class="label-frame">
+                        <div class="label">中文</div>
+                    </div>
+                    <div class="content-frame">
+                        <div class="content" v-for="(item, index) in currentWord.brainMeanModels" :key="index">
+                            {{item.brainPosModel.name}} {{item.means}}
+                        </div>
+                    </div>
                 </div>
-                <div class="content-frame">
-                    <div class="content" v-for="(item, index) in currentWord.brainMeanModels" :key="index">
-                        {{item.brainPosModel.name}} {{item.means}}
+                <div class="chinese ex">
+                    <div class="label-frame">
+                        <div class="label">例句</div>
+                    </div>
+                    <div class="content-frame">
+                        <div v-for="(item, index) in currentWord.brainSentenceModels" :key="index">
+                            <template v-if="index<3">
+                                <sentence
+                                    :id="`sentence_${index}`"
+                                    :english="item.english.replace(/\\/gi,'')"
+                                    :chinese="item.chinese"
+                                    :voiceSrc="item.voice"
+                                ></sentence>
+                            </template>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div v-if="false" class="chinese ex">
-                <div class="label-frame">
-                    <div class="label">例句</div>
-                </div>
-                <div class="content"></div>
+            <div v-if="false" class="learn-schedule">
+                学习进度
             </div>
-        </div>
-        <div v-if="false" class="learn-schedule">
-            学习进度
-        </div>
+        </scroll-view>
         <div class="next-btn t-l-vh_c" @click="nextWord">下一个</div>
     </div>
 </template>
@@ -43,6 +58,7 @@
     import superbridge from '../../lib/common/superbridge';
 
     import wordVoiceCard from './wordVoiceCard.component.vue';
+    import sentence from './sentence.component.vue';
     export default {
         props: {},
         data () {
@@ -53,7 +69,8 @@
             };
         },
         components: {
-            'word-voice-card': wordVoiceCard
+            'word-voice-card': wordVoiceCard,
+            sentence
         },
         computed: {
             voiceObj () {
@@ -132,6 +149,9 @@
     @import "../../lib/style/fonts/iconfont.css";
     @import "../../lib/style/layout";
     .container {
+        scroll-view{
+            height: 100%;
+        }
         .word-frame{
             padding: 0 20px;
             .word-card{
@@ -156,26 +176,28 @@
                     .label{
                         width:50px;
                         height:30px;
-                        border-radius: 10px;
+                        border-radius: 5px;
                         background: #b9dfa5;
-                        color: #efefef;
+                        color: #fff;
                         font-size: 18px;
                         line-height: 30px;
                         text-align: center;
                     }
                 }
                 .content-frame{
-                    width:250px;
+                    width:300px;
                     margin-top: 5px;
                     .content{
                         margin-left: 20px;
                         font-size: 14px;
                         width:250px;
+                        color: #635a68;
                     }
                 }
             }
             .ex{
                 margin-top: 20px;
+                padding-bottom: 50px;
                 .label-frame{
                     .label{
                         background: #efc7c7;
@@ -185,14 +207,15 @@
             }
         }
         .next-btn{
-            width:80px;
-            height:80px;
+            width:50px;
+            height:50px;
             border-radius: 50%;
             background: #b9dfa5;
             position: fixed;
             right: 20px;
             bottom: 10px;
             color: #fff;
+            font-size: 12px;
         }
     }
 </style>
