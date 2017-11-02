@@ -4,10 +4,10 @@
             <div v-if="userInfo.avatarUrl" class="header-img">
                 <img :src="userInfo.avatarUrl" alt="" mode="widthFix">
             </div>
-            <div v-if="userInfo.nickName" class="welcome t-l-vh_c">Hi,{{userInfo.nickName}}</div>
-            <div v-if="userInfo.nickName" class="desc t-l-h_c">不积跬步无以至千里,一定要坚持哟</div>
+            <div v-if="userInfo.nickName" class="welcome">Hi,{{userInfo.nickName}}</div>
+            <div v-if="userInfo.nickName" class="desc t-l-h_c">{{energy.english}}</div>
         </div>
-        <div class="pk t-l-vh_c">
+        <div v-if="false" class="pk t-l-vh_c">
             <div class="friend-pk">
                 <img src="http://p0.meituan.net/codeman/244aea13af93a91cb61f3ff7c31b9dfd58978.jpg" alt="" mode="widthFix">
                 <div class="desc">好友对战</div>
@@ -50,7 +50,8 @@ export default {
     data () {
         return {
             userInfo: {},
-            record: {}
+            record: {},
+            energy: ''
         };
     },
     created () {
@@ -74,6 +75,7 @@ export default {
         init () {
             this.initHeader();
             this.initRecord();
+            this.initEnergy();
         },
         initHeader () {
             superbridge.getUserInfo().then((res) => {
@@ -87,6 +89,15 @@ export default {
             }).then((res) => {
                 if (res.code === 0) {
                     this.record = res.data;
+                }
+            });
+        },
+        initEnergy () {
+            superbridge.fetch('/brain/energy', {
+                method: 'POST'
+            }).then((res) => {
+                if (res.code === 0) {
+                    this.energy = res.data;
                 }
             });
         },
@@ -111,9 +122,10 @@ export default {
     @import "../../lib/style/fonts/iconfont.css";
     @import "../../lib/style/layout";
     .container{
+        background: rgba(255,255,255,0.8);
+        height: 100%;
         .header{
             min-height: 140px;
-            background: rgba(255,255,255,0.8);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -131,13 +143,19 @@ export default {
             .welcome{
                 height: 60px;
                 font-size: 30px;
-                font-weight: bolder;
+                line-height: 60px;
+                width:90%;
                 color: #40ba9e;
                 font-family:"SimHei";
+                text-overflow:ellipsis;
+                white-space:nowrap;
+                overflow:hidden;
+                text-align: center;
             }
             .desc{
                 font-size: 15px;
                 color: #999;
+                width:80%;
             }
         }
         .pk{
@@ -172,8 +190,7 @@ export default {
             }
         }
         .learn{
-            margin-top: 10px;
-            background: rgba(255,255,255,0.8);
+            /*background: rgba(255,255,255,0.8);*/
             .word-cards{
                 padding: 0 10px;
                 height:100px;
@@ -194,6 +211,8 @@ export default {
                 }
             }
             .begin-btn-frame{
+                position: absolute;
+                bottom: 20px;
                 width:100%;
                 height:100px;
                 .begin-btn{
