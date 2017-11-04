@@ -1,7 +1,9 @@
 <template>
     <div class="container">
         <div class="content en">
-            {{english}}
+            <span v-for="(item, index) in splitWords" :key="index" :class="item.classType" @click="wordTapHandler($event,item.word)">
+                {{item.word}}
+            </span>
             <span class="voice">
                 <voice
                     size="small"
@@ -42,21 +44,37 @@
             }
         },
         data () {
-            return {};
+            return {
+                //
+            };
         },
         components: {
             voice
         },
-        computed: {},
-        methods: {},
+        computed: {
+            splitWords () {
+                return this.english.split(' ').reduce((pre, item) => {
+                    pre.push({
+                        word: item,
+                        classType: item.toLowerCase().split(/[\\.|\\!|,|\\?]/)[0] === this.word.toLowerCase() ? 'weight' : ''
+                    });
+                    return pre;
+                }, []);
+            }
+        },
+        methods: {
+            wordTapHandler (e, word) {
+                this.$emit('wordTap', word);
+            }
+        },
         created () {
             console.log('create');
         }
     };
 </script>
 <style lang="less" scoped>
-    @import "../../lib/style/fonts/iconfont.css";
-    @import "../../lib/style/layout";
+    @import "../lib/style/fonts/iconfont.css";
+    @import "../lib/style/layout";
     .container {
         .content{
             margin-left: 20px;
@@ -71,6 +89,11 @@
                 position: absolute;
                 bottom: 0;
                 margin-left: 10px;
+            }
+            .weight{
+                font-weight: bolder;
+                font-size: 18px;
+                color: #333;
             }
         }
         .zn{

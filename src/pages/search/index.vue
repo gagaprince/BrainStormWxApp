@@ -10,12 +10,9 @@
                 <word-page
                     :currentWord="currentWord"
                     :voiceObj="voiceObj"
+                    fromType="search"
                 ></word-page>
-                <div v-if="false" class="learn-schedule">
-                    学习进度
-                </div>
             </scroll-view>
-            <div class="next-btn t-l-vh_c" @click="nextWord">下一个</div>
         </template>
     </div>
 </template>
@@ -25,14 +22,11 @@
 
     import wordPage from '../../components/wordpage/wordPage.component.vue';
     import loadingPage from '../../components/loadingpage/loadingPage.component.vue';
-    import store from '../../lib/common/store';
     export default {
         props: {},
         data () {
             return {
-                newWordList: [],
-                historyWordList: [],
-                nowIndex: 0,
+                currentWord: {},
                 isLoading: true
             };
         },
@@ -43,53 +37,39 @@
         computed: {
             voiceObj () {
                 return JSON.parse(this.currentWord.voice || '{}');
-            },
-            currentWord () {
-                return this.newWordList && (this.newWordList[this.nowIndex] || (this.histroyWordList && this.histroyWordList[this.nowIndex - this.newWordList.length])) || {};
             }
         },
         methods: {
-            init () {
-                this.initRecord();
+            init (query) {
+                let word = query.word;
+                if (word) {
+                    this.initWord(word);
+                } else {
+                    superbridge.closeWebview();
+                }
             },
-            initRecord () {
-                superbridge.fetch('/brain/loadRecord', {
+            initWord (word) {
+                superbridge.fetch('/brain/search', {
+                    body: {
+                        word
+                    },
                     method: 'POST'
                 }).then((res) => {
                     if (res.code === 0) {
                         let data = res.data;
                         if (data) {
-                            this.newWordList = data.newWords;
-                            this.histroyWordList = data.historyWords;
+                            this.currentWord = data;
                         }
                         this.isLoading = false;
-                        this.showWordTost();
                     } else {
                         superbridge.alert({
-                            content: '服务器出错了，请稍后再试',
+                            content: '没有搜到这个词',
                             title: '对不起'
                         }).then(() => {
                             superbridge.closeWebview();
                         });
                     }
                 });
-            },
-            showWordTost () {
-                let hasShow = store.get('hasShowWordTost', '');
-                if (!hasShow) {
-                    superbridge.alert({
-                        content: '点击不认识的单词可以直接查询哟',
-                        title: '温馨提示'
-                    });
-                    store.set('hasShowWordTost', 1);
-                }
-            },
-            nextWord () {
-                this.nowIndex ++;
-                if (this.nowIndex >= (this.newWordList.length + this.histroyWordList.length)) {
-                    this.nowIndex = 0;
-                }
-                console.log(this.nowIndex);
             }
         },
         created () {
@@ -98,7 +78,7 @@
         onLoad (data) {
             this.isLoading = true;
             account.init().then(() => {
-                this.init();
+                this.init(this.$root.$mp.query);
             });
         },
         onShow () {

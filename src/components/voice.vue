@@ -47,8 +47,8 @@
     };
 </script>
 <style lang="less" scoped>
-    @import "../../lib/style/fonts/iconfont.css";
-    @import "../../lib/style/layout";
+    @import "../lib/style/fonts/iconfont.css";
+    @import "../lib/style/layout";
     .container {
         .voice-btn{
             width:30px;

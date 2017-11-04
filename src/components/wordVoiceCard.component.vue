@@ -1,11 +1,13 @@
 <template>
     <div class="container">
         <div class="word-voice-frame t-l-v_c">
-            <voice
-                :voiceSrc="voiceSrc"
-                :id="id"
-            ></voice>
-            <div class="word-voice">{{wordVoice}}</div>
+            <template v-if="wordVoice">
+                <voice
+                    :voiceSrc="voiceSrc"
+                    :id="id"
+                ></voice>
+                <div class="word-voice">{{wordVoice}}</div>
+            </template>
         </div>
     </div>
 </template>
@@ -42,8 +44,8 @@
     };
 </script>
 <style lang="less" scoped>
-    @import "../../lib/style/fonts/iconfont.css";
-    @import "../../lib/style/layout";
+    @import "../lib/style/fonts/iconfont.css";
+    @import "../lib/style/layout";
     .container {
         .word-voice-frame{
             margin-top: 10px;

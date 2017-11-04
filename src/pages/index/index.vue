@@ -1,63 +1,73 @@
 <template>
     <div class="container">
-        <div class="header">
-            <div v-if="userInfo.avatarUrl" class="header-img">
-                <img :src="userInfo.avatarUrl" alt="" mode="widthFix">
-            </div>
-            <div v-if="userInfo.nickName" class="welcome">Hi,{{userInfo.nickName}}</div>
-            <div v-if="userInfo.nickName" class="desc t-l-h_c">{{energy.english}}</div>
-        </div>
-        <div v-if="false" class="pk t-l-vh_c">
-            <div class="friend-pk">
-                <img src="http://p0.meituan.net/codeman/244aea13af93a91cb61f3ff7c31b9dfd58978.jpg" alt="" mode="widthFix">
-                <div class="desc">好友对战</div>
-            </div>
-            <div class="random-pk">
-                <img src="http://p1.meituan.net/codeman/4fc75dcfc17037627a16539d1cb9214e84636.jpg" alt="" mode="widthFix">
-                <div class="desc">随机对战</div>
-            </div>
-        </div>
-        <div class="learn">
-            <div class="word-cards">
-                <div class="word-card t-l-vh_c">
-                    <div class="word-num">{{record.newSize}}</div>
-                    <div class="desc">新词数</div>
+        <template v-if="isLoading">
+            <loading-page></loading-page>
+        </template>
+        <template v-if="!isLoading">
+            <div class="header">
+                <div v-if="userInfo.avatarUrl" class="header-img">
+                    <img :src="userInfo.avatarUrl" alt="" mode="widthFix">
                 </div>
-                <div class="word-card t-l-vh_c">
-                    <div class="word-num">{{record.totalSize}}</div>
-                    <div class="desc">今日单词</div>
+                <div v-if="userInfo.nickName" class="welcome">Hi,{{userInfo.nickName}}</div>
+                <div v-if="userInfo.nickName" class="desc t-l-h_c">{{energy.english}}</div>
+            </div>
+            <div v-if="false" class="pk t-l-vh_c">
+                <div class="friend-pk">
+                    <img src="http://p0.meituan.net/codeman/244aea13af93a91cb61f3ff7c31b9dfd58978.jpg" alt="" mode="widthFix">
+                    <div class="desc">好友对战</div>
                 </div>
-                <div class="word-card t-l-vh_c">
-                    <div class="word-num">{{record.totalSize}}</div>
-                    <div class="desc">剩余单词</div>
-                </div><!--
-                <div class="word-card t-l-vh_c">
-                    <div class="word-num">0</div>
-                    <div class="desc">我的单词</div>
-                </div>-->
+                <div class="random-pk">
+                    <img src="http://p1.meituan.net/codeman/4fc75dcfc17037627a16539d1cb9214e84636.jpg" alt="" mode="widthFix">
+                    <div class="desc">随机对战</div>
+                </div>
             </div>
-            <div class="begin-btn-frame t-l-vh_c">
-                <div @click="beginLearn" class="begin-btn">开始学习</div>
+            <div class="learn">
+                <div class="word-cards">
+                    <div class="word-card t-l-vh_c">
+                        <div class="word-num">{{record.newSize}}</div>
+                        <div class="desc">新词数</div>
+                    </div>
+                    <div class="word-card t-l-vh_c">
+                        <div class="word-num">{{record.totalSize}}</div>
+                        <div class="desc">今日单词</div>
+                    </div>
+                    <div class="word-card t-l-vh_c">
+                        <div class="word-num">{{record.totalSize}}</div>
+                        <div class="desc">剩余单词</div>
+                    </div><!--
+                    <div class="word-card t-l-vh_c">
+                        <div class="word-num">0</div>
+                        <div class="desc">我的单词</div>
+                    </div>-->
+                </div>
+                <div class="begin-btn-frame t-l-vh_c">
+                    <div @click="beginLearn" class="begin-btn">开始学习</div>
+                </div>
             </div>
-        </div>
+        </template>
     </div>
 </template>
 
 <script>
 import account from '../../lib/common/account';
 import superbridge from '../../lib/common/superbridge';
+
+import loadingPage from '../../components/loadingpage/loadingPage.component.vue';
+
 export default {
     data () {
         return {
             userInfo: {},
             record: {},
-            energy: ''
+            energy: '',
+            isLoading: true
         };
     },
     created () {
         //
     },
     onLoad () {
+        this.isLoading = true;
         account.init().then(() => {
             console.log('账户初始化成功');
             console.log('openId:' + superbridge.getOpenId());
@@ -69,6 +79,7 @@ export default {
     },
 
     components: {
+        'loading-page': loadingPage
     },
 
     methods: {
@@ -89,6 +100,7 @@ export default {
             }).then((res) => {
                 if (res.code === 0) {
                     this.record = res.data;
+                    this.isLoading = false;
                 }
             });
         },
