@@ -164,7 +164,6 @@
             }
             .ex{
                 margin-top: 20px;
-                padding-bottom: 50px;
                 .label-frame{
                     .label{
                         background: #efc7c7;

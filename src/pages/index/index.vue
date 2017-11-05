@@ -4,6 +4,19 @@
             <loading-page></loading-page>
         </template>
         <template v-if="!isLoading">
+            <div class="search-frame t-l-vh_c">
+                <div class="search t-l-v_c">
+                    <input type="text"
+                           :value="searchVal"
+                           placeholder="请输入查询单词"
+                           placeholder-style="color:#afafaf;font-size:16px;"
+                           confirm-type="search"
+                           @input="inputHandler"
+                           @confirm="searchHandler"
+                    >
+                </div>
+                <div class="search-btn iconfont icon-iconfront-sousuo" @click="searchHandler"></div>
+            </div>
             <div class="header">
                 <div v-if="userInfo.avatarUrl" class="header-img">
                     <img :src="userInfo.avatarUrl" alt="" mode="widthFix">
@@ -40,6 +53,9 @@
                         <div class="desc">我的单词</div>
                     </div>-->
                 </div>
+                <div class="word-type t-l-vh_c">
+                    当前使用：GRE词库
+                </div>
                 <div class="begin-btn-frame t-l-vh_c">
                     <div @click="beginLearn" class="begin-btn">开始学习</div>
                 </div>
@@ -57,10 +73,29 @@ import loadingPage from '../../components/loadingpage/loadingPage.component.vue'
 export default {
     data () {
         return {
+            searchVal: '',
             userInfo: {},
             record: {},
             energy: '',
-            isLoading: true
+            isLoading: true,
+            wordType: {
+                id: 'cet4',
+                name: '大学英语四级词库'
+            },
+            wordTypes: [
+                {
+                    id: 'cet4',
+                    name: '大学英语四级词库'
+                },
+                {
+                    id: 'cet6',
+                    name: '大学英语六级词库'
+                },
+                {
+                    id: 'gre',
+                    name: 'GRE词库'
+                }
+            ]
         };
     },
     created () {
@@ -118,6 +153,19 @@ export default {
             superbridge.openWebview({
                 url
             });
+        },
+        inputHandler (e) {
+            this.searchVal = e.target.value;
+        },
+        searchHandler (e) {
+            let val = this.searchVal;
+            let url = `/pages/search/search?word=${val.trim()}`;
+            superbridge.openWebview({
+                url
+            });
+            setTimeout(() => {
+                this.searchVal = '';
+            });
         }
     }
 };
@@ -136,6 +184,30 @@ export default {
     .container{
         background: rgba(255,255,255,0.8);
         height: 100%;
+        .search-frame{
+            width:100%;
+            height: 50px;
+            position: relative;
+            .search{
+                width:80%;
+                height: 30px;
+                background:#fff;
+                border-radius: 15px;
+                padding: 0 15px;
+                input{
+                    font-size: 18px;
+                }
+            }
+            .search-btn{
+                font-size: 20px;
+                color: #40ba9e;
+                position: absolute;
+                right: 10%;
+                top:13px;
+                margin-left: -20px;
+                z-index: 99;
+            }
+        }
         .header{
             min-height: 140px;
             display: flex;
@@ -221,6 +293,11 @@ export default {
                         font-size: 14px;
                     }
                 }
+            }
+            .word-type{
+                color: #666;
+                margin-top: 10px;
+
             }
             .begin-btn-frame{
                 position: absolute;

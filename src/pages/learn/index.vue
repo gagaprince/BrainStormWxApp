@@ -5,7 +5,9 @@
         </template>
         <template v-if="!isLoading">
             <scroll-view
-                scorll-y
+                scroll-y="true"
+                :style="scrollViewStyle"
+                :scroll-top="scrollViewTop"
             >
                 <word-page
                     :currentWord="currentWord"
@@ -15,7 +17,15 @@
                     学习进度
                 </div>
             </scroll-view>
-            <div class="next-btn t-l-vh_c" @click="nextWord">下一个</div>
+            <div class="footer t-l-vh_c">
+                <div class="pre-btn t-l-vh_c" @click="preWord">上一个</div>
+                <progress
+                    :percent="wordPercent"
+                    activeColor="#b9dfa5"
+                ></progress>
+                <div class="progress-desc t-l-vh_c">{{wordProgress}}</div>
+                <div class="next-btn t-l-vh_c" @click="nextWord">下一个</div>
+            </div>
         </template>
     </div>
 </template>
@@ -33,7 +43,9 @@
                 newWordList: [],
                 historyWordList: [],
                 nowIndex: 0,
-                isLoading: true
+                isLoading: true,
+                scrollViewStyle: 'height:0px;',
+                scrollViewTop: 0
             };
         },
         components: {
@@ -46,14 +58,32 @@
             },
             currentWord () {
                 return this.newWordList && (this.newWordList[this.nowIndex] || (this.histroyWordList && this.histroyWordList[this.nowIndex - this.newWordList.length])) || {};
+            },
+            wordPercent () {
+                let percent = 0;
+                if (this.newWordList && this.histroyWordList) {
+                    percent = parseInt((this.nowIndex + 1) / (this.newWordList.length + this.histroyWordList.length) * 100);
+                }
+                return percent;
+            },
+            wordProgress () {
+                let progress = '';
+                if (this.newWordList && this.histroyWordList) {
+                    progress = `${this.nowIndex + 1}/${this.newWordList.length + this.histroyWordList.length}`;
+                }
+                return progress;
             }
         },
         methods: {
             init () {
                 this.initRecord();
+                this.initScrollViewStyle();
             },
             initRecord () {
                 superbridge.fetch('/brain/loadRecord', {
+                    body: {
+                        wordType: 'gre'
+                    },
                     method: 'POST'
                 }).then((res) => {
                     if (res.code === 0) {
@@ -74,6 +104,12 @@
                     }
                 });
             },
+            initScrollViewStyle () {
+                superbridge.getSystemInfo().then((res) => {
+                    let windowHeight = res.windowHeight;
+                    this.scrollViewStyle = `height:${windowHeight - 70}px;`;
+                });
+            },
             showWordTost () {
                 let hasShow = store.get('hasShowWordTost', '');
                 if (!hasShow) {
@@ -84,12 +120,19 @@
                     store.set('hasShowWordTost', 1);
                 }
             },
+            preWord () {
+                this.nowIndex --;
+                if (this.nowIndex < 0) {
+                    this.nowIndex = this.newWordList.length + this.histroyWordList.length - 1;
+                }
+                this.scrollViewTop = 0;
+            },
             nextWord () {
                 this.nowIndex ++;
                 if (this.nowIndex >= (this.newWordList.length + this.histroyWordList.length)) {
                     this.nowIndex = 0;
                 }
-                console.log(this.nowIndex);
+                this.scrollViewTop = 0;
             }
         },
         created () {
@@ -124,16 +167,38 @@
         scroll-view{
             height: 100%;
         }
-        .next-btn{
-            width:50px;
-            height:50px;
-            border-radius: 50%;
-            background: #b9dfa5;
-            position: fixed;
-            right: 20px;
-            bottom: 10px;
-            color: #fff;
-            font-size: 12px;
+        .footer{
+            height:70px;
+            width:100%;
+            position: absolute;
+            z-index: 99;
+            bottom: 0;
+            background: #fff;
+            progress{
+                width:45%;
+            }
+            .progress-desc{
+                font-size: 16px;
+                width:50px;
+                color: #40ba9e;
+            }
+            .pre-btn,.next-btn{
+                width:50px;
+                height:50px;
+                border-radius: 50%;
+                background: #b9dfa5;
+                position: absolute;
+                color: #fff;
+                font-size: 12px;
+                bottom: 10px;
+            }
+            .pre-btn{
+                left: 20px;
+            }
+            .next-btn{
+                right: 20px;
+            }
         }
+
     }
 </style>
