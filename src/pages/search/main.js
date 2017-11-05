@@ -7,7 +7,7 @@ export default {
     config: {
         backgroundTextStyle: 'light',
         navigationBarBackgroundColor: '#fff',
-        navigationBarTitleText: '每日学习',
+        navigationBarTitleText: '单词搜索',
         navigationBarTextStyle: 'black'
     }
 };

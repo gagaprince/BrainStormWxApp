@@ -8,11 +8,12 @@
     "dev": "node build/dev-server.js",
     "start": "node build/dev-server.js",
     "build": "node build/build.js",
+    "pack":"node build/build.js package",
     "lint": "eslint --ext .js,.vue src"
   },
   "dependencies": {
-    "@hfe/traffic-util": "^0.0.19",
-    "@hfe/mpvue": "0.0.11"
+    "@hfe/mpvue": "0.0.11",
+    "@hfe/traffic-util": "^0.0.19"
   },
   "devDependencies": {
     "@hfe/generator-hfe-utils": "^2.0.12",
@@ -50,6 +51,7 @@
     "http-proxy-middleware": "^0.17.3",
     "less": "^2.7.2",
     "less-loader": "^4.0.5",
+    "moment": "^2.19.1",
     "node-sass": "^4.5.2",
     "opn": "^5.1.0",
     "optimize-css-assets-webpack-plugin": "^2.0.0",

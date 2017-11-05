@@ -1,6 +1,7 @@
 require('./check-versions')()
 
 process.env.NODE_ENV = 'production'
+var argv = process.argv.splice(2);
 
 var ora = require('ora')
 var rm = require('rimraf')
@@ -9,6 +10,12 @@ var chalk = require('chalk')
 var webpack = require('webpack')
 var config = require('../config')
 var webpackConfig = require('./webpack.prod.conf')
+
+var fs = require('fs');
+var fstream = require('fstream');
+var tar = require('tar');
+var zlib = require('zlib');
+var moment = require('moment');
 
 var spinner = ora('building for production...')
 spinner.start()
@@ -35,6 +42,18 @@ rm(path.join(config.build.assetsRoot, config.build.assetsSubDirectory), err => {
     console.log(chalk.yellow(
       '  Tip: built files are meant to be served over an HTTP server.\n' +
       '  Opening index.html over file:// won\'t work.\n'
-    ))
+    ));
+
+    if(argv[0] == 'package'){
+        fstream.Reader({
+            path:path.join(__dirname, '..' ,'dist'),
+            type:'Directory'
+        }).pipe(tar.Pack())
+        .pipe(zlib.Gzip())
+        .pipe(fstream.Writer({
+            path:path.join(__dirname,'..','package',moment().format('YYYY_MM_DD_HH_mm'),'GagaWord.tar.gz')
+        }));
+    }
+
   })
 })
