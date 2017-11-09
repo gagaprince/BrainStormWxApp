@@ -1,6 +1,6 @@
-# meishi.wxapp
+# 嘎嘎记单词
 
-> 美团点评美食小程序
+> 嘎嘎记单词
 
 ## Build Setup
 
