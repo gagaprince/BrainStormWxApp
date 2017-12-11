@@ -22,6 +22,7 @@
                     <img :src="userInfo.avatarUrl" alt="" mode="widthFix">
                 </div>
                 <div v-if="userInfo.nickName" class="welcome">Hi,{{userInfo.nickName}}</div>
+                <div v-if="userInfo.nickName && record" class="day-num t-l-h_c">第{{record.dayIndex+1}}天</div>
                 <div v-if="userInfo.nickName" class="desc t-l-h_c">{{energy.english}}</div>
             </div>
             <div v-if="false" class="pk t-l-vh_c">
@@ -230,7 +231,7 @@ export default {
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 20px 10px;
+            padding: 20px 10px 10px;
             .header-img{
                 width:50px;
                 height:50px;
@@ -255,6 +256,12 @@ export default {
             }
             .desc{
                 font-size: 15px;
+                color: #efefef;
+                width:80%;
+            }
+            .day-num{
+                font-size: 20px;
+                margin-bottom: 10px;
                 color: #efefef;
                 width:80%;
             }
@@ -294,7 +301,7 @@ export default {
             /*background: rgba(255,255,255,0.8);*/
             .word-cards{
                 padding: 0 10px;
-                height:100px;
+                height:80px;
                 display: flex;
                 .word-card{
                     width:33.33%;
