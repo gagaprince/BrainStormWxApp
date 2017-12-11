@@ -89,6 +89,7 @@
                 if (word.id) {
                     superbridge.fetch('/brain/isInCollect', {
                         showLoading: false,
+                        showError: false,
                         body: {
                             wordId: word.id
                         },
