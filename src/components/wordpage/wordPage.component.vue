@@ -13,6 +13,9 @@
                 :wordVoice="en"
             ></word-voice-card>
             <div class="bt-line"></div>
+            <div class="collection-btn" @click="collectBtnHandler">
+                <div :class="collectBtnStyle"></div>
+            </div>
         </div>
         <div v-if="currentWord.brainMeanModels" class="trans-frame">
             <div class="chinese">
@@ -68,13 +71,43 @@
             }
         },
         data () {
-            return {};
+            return {
+                isActive: false
+            };
         },
         components: {
             'word-voice-card': wordVoiceCard,
             sentence
         },
         computed: {
+            collectBtnStyle () {
+                return this.isActive ? 'iconfont icon-shuqian shuqian active' : 'iconfont icon-shuqian shuqian'
+            },
+            onWordChange () {
+                const word = this.currentWord;
+                console.log(word);
+                if (word.id) {
+                    superbridge.fetch('/brain/isInCollect', {
+                        showLoading: false,
+                        body: {
+                            wordId: word.id
+                        },
+                        method: 'POST'
+                    }).then((res) => {
+                        if (res.code === 0) {
+                            let data = res.data;
+                            if (data) {
+                                // 有收藏过
+                                this.isActive = data.isAlive;
+                            } else {
+                                this.isActive = false;
+                            }
+                        } else {
+                            //
+                        }
+                    });
+                }
+            },
             en () {
                 // 英文音标
                 let enU = this.voiceObj.ph_en || '';
@@ -110,6 +143,35 @@
                         redirect: true
                     });
                 }
+            },
+            _addCollection () {
+                const word = this.currentWord;
+                superbridge.fetch('/brain/addCollect', {
+                    showLoading: false,
+                    body: {
+                        wordId: word.id
+                    },
+                    method: 'POST'
+                });
+            },
+            _removeCollection () {
+                const word = this.currentWord;
+                superbridge.fetch('/brain/removeCollect', {
+                    showLoading: false,
+                    body: {
+                        wordId: word.id
+                    },
+                    method: 'POST'
+                });
+            },
+            collectBtnHandler () {
+                if (this.isActive) {
+                    this.isActive = 0;
+                    this._removeCollection();
+                } else {
+                    this.isActive = 1;
+                    this._addCollection();
+                }
             }
         },
         created () {
@@ -131,6 +193,19 @@
             .bt-line{
                 margin-top: 20px;
                 border-bottom: 1px dashed #afafaf;
+            }
+            position: relative;
+            .collection-btn{
+                position: absolute;
+                top:20px;
+                right: 40px;
+                .shuqian{
+                    font-size: 30px;
+                    color: #655d6a;
+                }
+                .active{
+                    color: #40ba9e;
+                }
             }
         }
         .trans-frame{

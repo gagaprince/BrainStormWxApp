@@ -3,11 +3,12 @@ import App from './index';
 
 const app = new Vue(App);
 app.$mount();
-
 export default {
     config: {
         backgroundTextStyle: 'light',
-        navigationBarBackgroundColor: '#070707',
-        navigationBarTextStyle: 'white'
+        navigationBarBackgroundColor: '#fff',
+        navigationBarTitleText: '生词本',
+        navigationBarTextStyle: 'black'
     }
 };
+

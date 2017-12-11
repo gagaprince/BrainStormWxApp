@@ -4,28 +4,30 @@
             <loading-page></loading-page>
         </template>
         <template v-if="!isLoading">
-            <scroll-view
-                scroll-y="true"
-                :style="scrollViewStyle"
-                :scroll-top="scrollViewTop"
-            >
-                <word-page
-                    :currentWord="currentWord"
-                    :voiceObj="voiceObj"
-                ></word-page>
-                <div v-if="false" class="learn-schedule">
-                    学习进度
+            <template v-if="isShow">
+                <scroll-view
+                    scroll-y="true"
+                    :style="scrollViewStyle"
+                    :scroll-top="scrollViewTop"
+                >
+                    <word-page
+                        :currentWord="currentWord"
+                        :voiceObj="voiceObj"
+                    ></word-page>
+                    <div v-if="false" class="learn-schedule">
+                        学习进度
+                    </div>
+                </scroll-view>
+                <div class="footer t-l-vh_c">
+                    <div class="pre-btn t-l-vh_c" @click="preWord">上一个</div>
+                    <progress
+                        :percent="wordPercent"
+                        activeColor="#b9dfa5"
+                    ></progress>
+                    <div class="progress-desc t-l-vh_c">{{wordProgress}}</div>
+                    <div class="next-btn t-l-vh_c" @click="nextWord">下一个</div>
                 </div>
-            </scroll-view>
-            <div class="footer t-l-vh_c">
-                <div class="pre-btn t-l-vh_c" @click="preWord">上一个</div>
-                <progress
-                    :percent="wordPercent"
-                    activeColor="#b9dfa5"
-                ></progress>
-                <div class="progress-desc t-l-vh_c">{{wordProgress}}</div>
-                <div class="next-btn t-l-vh_c" @click="nextWord">下一个</div>
-            </div>
+            </template>
         </template>
     </div>
 </template>
@@ -40,8 +42,8 @@
         props: {},
         data () {
             return {
-                newWordList: [],
-                historyWordList: [],
+                isShow: false,
+                wordList: [],
                 nowIndex: 0,
                 isLoading: true,
                 scrollViewStyle: 'height:0px;',
@@ -57,19 +59,19 @@
                 return JSON.parse(this.currentWord.voice || '{}');
             },
             currentWord () {
-                return this.newWordList && (this.newWordList[this.nowIndex] || (this.histroyWordList && this.histroyWordList[this.nowIndex - this.newWordList.length])) || {};
+                return this.wordList && this.wordList[this.nowIndex] || {};
             },
             wordPercent () {
                 let percent = 0;
-                if (this.newWordList && this.histroyWordList) {
-                    percent = parseInt((this.nowIndex + 1) / (this.newWordList.length + this.histroyWordList.length) * 100);
+                if (this.wordList) {
+                    percent = parseInt((this.nowIndex + 1) / (this.wordList.length) * 100);
                 }
                 return percent;
             },
             wordProgress () {
                 let progress = '';
-                if (this.newWordList && this.histroyWordList) {
-                    progress = `${this.nowIndex + 1}/${this.newWordList.length + this.histroyWordList.length}`;
+                if (this.wordList) {
+                    progress = `${this.nowIndex + 1}/${this.wordList.length}`;
                 }
                 return progress;
             }
@@ -80,17 +82,29 @@
                 this.initScrollViewStyle();
             },
             initRecord () {
-                superbridge.fetch('/brain/loadRecord', {
+                superbridge.fetch('/brain/listCollect', {
                     body: {
-                        wordType: 'gre'
                     },
                     method: 'POST'
                 }).then((res) => {
                     if (res.code === 0) {
                         let data = res.data;
                         if (data) {
-                            this.newWordList = data.newWords;
-                            this.histroyWordList = data.historyWords;
+                            this.wordList = data;
+                            if (data.length === 0) {
+                                superbridge.alert({
+                                    content: '生词本是空的，还是去学习今日单词吧',
+                                    title: '提示'
+                                }).then(() => {
+                                    let url = '/pages/learn/learn';
+                                    superbridge.openWebview({
+                                        url,
+                                        redirect: true
+                                    });
+                                });
+                            } else {
+                                this.isShow = true;
+                            }
                         }
                         this.isLoading = false;
                         this.showWordTost();
@@ -112,24 +126,24 @@
             },
             showWordTost () {
                 let hasShow = store.get('hasShowWordTost', '');
-                if (hasShow && hasShow < 2) {
+                if (!hasShow) {
                     superbridge.alert({
-                        content: '点击不认识的单词可以直接查询哟,右上角书签可以加入生词本',
+                        content: '点击不认识的单词可以直接查询哟',
                         title: '温馨提示'
                     });
-                    store.set('hasShowWordTost', 2);
+                    store.set('hasShowWordTost', 1);
                 }
             },
             preWord () {
                 this.nowIndex --;
                 if (this.nowIndex < 0) {
-                    this.nowIndex = this.newWordList.length + this.histroyWordList.length - 1;
+                    this.nowIndex = this.wordList.length - 1;
                 }
                 this.scrollViewTop = 0;
             },
             nextWord () {
                 this.nowIndex ++;
-                if (this.nowIndex >= (this.newWordList.length + this.histroyWordList.length)) {
+                if (this.nowIndex >= (this.wordList.length)) {
                     this.nowIndex = 0;
                 }
                 this.scrollViewTop = 0;

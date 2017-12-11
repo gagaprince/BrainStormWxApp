@@ -1,7 +1,7 @@
 <template>
     <div class="container">
         <div :class="btnClass" @click="playAmVoice">
-            <div class="iconfont icon-xiaolaba laba"></div>
+            <div class="iconfont icon-laba laba"></div>
             <template v-if="voiceSrc">
                 <audio :src="voiceSrc" :id="id"></audio>
             </template>
@@ -56,6 +56,7 @@
             border-radius: 50%;
             background: #a09ca3;
             .laba{
+                margin-top:-1px;
                 color:#fff;
                 font-size: 16px;
                 font-weight: bolder;

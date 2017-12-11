@@ -45,8 +45,8 @@
                         <div class="desc">今日单词</div>
                     </div>
                     <div class="word-card t-l-vh_c">
-                        <div class="word-num">{{record.totalSize}}</div>
-                        <div class="desc">剩余单词</div>
+                        <div class="word-num">{{record.collectCount}}</div>
+                        <div class="desc">生词本</div>
                     </div><!--
                     <div class="word-card t-l-vh_c">
                         <div class="word-num">0</div>
@@ -59,6 +59,9 @@
                 <div class="begin-btn-frame t-l-vh_c">
                     <div @click="beginLearn" class="begin-btn">开始学习</div>
                 </div>
+                <div class="review-btn-frame t-l-vh_c">
+                    <div @click="beginReview" class="begin-btn">生词本</div>
+                </div>
             </div>
         </template>
     </div>
@@ -70,6 +73,7 @@ import superbridge from '../../lib/common/superbridge';
 
 import loadingPage from '../../components/loadingpage/loadingPage.component.vue';
 
+let isFirstOnShow = true;
 export default {
     data () {
         return {
@@ -107,7 +111,13 @@ export default {
             console.log('账户初始化成功');
             console.log('openId:' + superbridge.getOpenId());
             this.init();
+            isFirstOnShow = false;
         });
+    },
+    onShow () {
+        if (!isFirstOnShow) {
+            this.initRecord();
+        }
     },
     onHide () {
         //
@@ -131,6 +141,7 @@ export default {
         },
         initRecord () {
             superbridge.fetch('/brain/loadRecordNum', {
+                showLoading: false,
                 method: 'POST'
             }).then((res) => {
                 if (res.code === 0) {
@@ -154,6 +165,12 @@ export default {
                 url
             });
         },
+        beginReview () {
+            let url = '/pages/review/review';
+            superbridge.openWebview({
+                url
+            });
+        },
         inputHandler (e) {
             this.searchVal = e.target.value;
         },
@@ -173,7 +190,7 @@ export default {
 
 <style>
     page{
-        background:url(http://p1.meituan.net/codeman/bfd4d94c7fed81a71fd4ad5051ab8bcc70771.jpg);
+        background:url(https://p1.meituan.net/codeman/cb0bf41ab416a426f6b8cc0d98b699a7135369.jpg);
         background-size: 375px 667px;
         height: 100%;
     }
@@ -182,7 +199,7 @@ export default {
     @import "../../lib/style/fonts/iconfont.css";
     @import "../../lib/style/layout";
     .container{
-        background: rgba(255,255,255,0.8);
+        /*background: rgba(255,255,255,0.8);*/
         height: 100%;
         .search-frame{
             width:100%;
@@ -238,7 +255,7 @@ export default {
             }
             .desc{
                 font-size: 15px;
-                color: #999;
+                color: #efefef;
                 width:80%;
             }
         }
@@ -285,34 +302,37 @@ export default {
                     .word-num{
                         font-size: 30px;
                         font-weight: bolder;
-                        color: #333;
+                        color: #efefef;
                         font-family:"STHupo";
                     }
                     .desc{
-                        color: #999;
+                        color: #efefef;
                         font-size: 14px;
                     }
                 }
             }
             .word-type{
-                color: #666;
+                color: #efefef;
                 margin-top: 10px;
 
             }
-            .begin-btn-frame{
+            .begin-btn-frame,.review-btn-frame{
                 position: absolute;
-                bottom: 20px;
+                bottom: 80px;
                 width:100%;
                 height:100px;
                 .begin-btn{
                     width: 200px;
                     height:50px;
-                    background: #40ba9e;
+                    background: rgba(64,186,158,0.8);
                     color: #fff;
                     text-align: center;
                     line-height: 50px;
                     border-radius: 25px;
                 }
+            }
+            .review-btn-frame{
+                bottom: 20px;
             }
         }
     }

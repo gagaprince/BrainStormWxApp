@@ -15,7 +15,8 @@ if (process.env.NODE_ENV === 'test') { // 测试
 }
 
 if (process.env.NODE_ENV === 'development') { // 开发
-    HOST = 'http://192.168.2.119:9999';
+    // HOST = 'http://192.168.2.119:9999';
+    HOST = 'http://172.18.99.2:9999';
     // HOST = 'http://172.18.100.240:9999';
 }
 
@@ -55,6 +56,7 @@ class superbridge {
             }
 
             console.log(requestUrl);
+
 
             const pageSource = 'brain_wxapp'; // 小程序来源标识
 
