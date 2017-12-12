@@ -57,12 +57,17 @@
                 <div class="word-type t-l-vh_c">
                     当前使用：GRE词库
                 </div>
-                <div class="begin-btn-frame t-l-vh_c">
-                    <div @click="beginLearn" class="begin-btn">开始学习</div>
-                </div>
-                <div class="review-btn-frame t-l-vh_c">
-                    <div @click="beginReview" class="begin-btn">生词本</div>
-                </div>
+                <form @submit="beginLearn" report-submit="true">
+                    <div class="begin-btn-frame t-l-vh_c">
+                        <!--<div @click="beginLearn">开始学习</div>-->
+                        <button formType="submit" class="begin-btn">开始学习</button>
+                    </div>
+                </form>
+                <form @submit="beginReview" report-submit="true">
+                    <div class="review-btn-frame t-l-vh_c">
+                        <button formType="submit" class="begin-btn">生词本</button>
+                    </div>
+                </form>
             </div>
         </template>
     </div>
@@ -160,16 +165,20 @@ export default {
                 }
             });
         },
-        beginLearn () {
-            let url = '/pages/learn/learn';
-            superbridge.openWebview({
-                url
+        beginLearn (e) {
+            this.formSubmit(e).then(() => {
+                let url = '/pages/learn/learn';
+                superbridge.openWebview({
+                    url
+                });
             });
         },
-        beginReview () {
-            let url = '/pages/review/review';
-            superbridge.openWebview({
-                url
+        beginReview (e) {
+            this.formSubmit(e).then(() => {
+                let url = '/pages/review/review';
+                superbridge.openWebview({
+                    url
+                });
             });
         },
         inputHandler (e) {
@@ -183,6 +192,16 @@ export default {
             });
             setTimeout(() => {
                 this.searchVal = '';
+            });
+        },
+        formSubmit (e) {
+            const formId = e.target.formId;
+            return superbridge.fetch('/brain/collectFormId', {
+                showLoading: false,
+                method: 'POST',
+                body: {
+                    formId
+                }
             });
         }
     }
